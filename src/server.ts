@@ -102,6 +102,7 @@ app.use(function (
   return
 })
 
-app.listen(8000, function () {
-  console.log('App is listening on port 8000!')
+const PORT = process.env.PORT || 8000
+app.listen(PORT, function () {
+  console.log(`App is listening on port ${PORT}!`)
 })

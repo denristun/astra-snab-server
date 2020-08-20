@@ -4,7 +4,7 @@
   "description": "BackEnd server for astra-snab",
   "main": "server.ts",
   "scripts": {
-    "start": "node -r ts-node/register ./src/server.ts",
+    "start": "ts-node ./src/server.ts",
     "start:watch": "nodemon"
   },
   "keywords": [

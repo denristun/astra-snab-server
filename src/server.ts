@@ -7,7 +7,6 @@ import cors from 'cors'
 import BankRequest from './interfaces/BankRequest'
 import BankDocument from './interfaces/BankDocument'
 import { BankRequestModel, BankDocumentModel } from './libs/mongoose'
-import { request } from 'http'
 
 const groupBy = (key: any) => (array: any) =>
 array.reduce(

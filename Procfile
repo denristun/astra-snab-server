@@ -1,1 +1,1 @@
-web: node -r ts-node/register ./src/server.ts
+web: ts-node ./src/server.ts

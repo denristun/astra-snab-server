@@ -6,10 +6,17 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import BankRequest from './interfaces/BankRequest'
 import BankDocument from './interfaces/BankDocument'
-import { BankRequestModel, BankDocumentModel, RequestModel, GroupModel } from './libs/mongoose'
-import { groupByRequest } from './libs/utils'
-import Group from './interfaces/Group'
+import { BankRequestModel, BankDocumentModel } from './libs/mongoose'
 
+const groupBy = (key: any) => (array: any) =>
+array.reduce(
+  (objectsByKeyValue: any, obj:any) => ({
+    ...objectsByKeyValue,
+    [obj[key]]: (objectsByKeyValue[obj[key]] || []).concat(obj),
+  }),
+  {}
+)
+const groupByRequest = groupBy('request')
 
 // Create a new express app instance
 const app: express.Application = express()
@@ -30,22 +37,6 @@ app.get('/api/bank', function (req, res) {
   }).sort('-value')
 })
 
-app.get('/api/groups', function (req, res) {
- //Получение уникальных групп
- GroupModel.find({}, (error: any, groups: Group[]) => {
-  res.send(JSON.stringify(groups))
-}).sort('-value')
-})
-
-app.post('/api/requests_by_group', function (req, res) {
-  //Получение заявок по группам
-  const group = req.body.group
-  BankRequestModel.find({'request': { '$regex': group, '$options': 'i' }}, (error: any, requests: BankRequest[]) => {
-   res.send(Object.entries(groupByRequest(requests)))
- }).sort('-value')
- })
-
-
 //Добавление всех записей из excel в БД
 app.post('/api/bank', async function (req, res) {
   const data = req.body
@@ -56,22 +47,12 @@ app.post('/api/bank', async function (req, res) {
    data.map( (bankDocument: BankDocument) => {
       return BankDocumentModel.create(bankDocument)
         .then((bankDoc: BankDocument) => {
-          const bankRequestResult = BankRequestModel.insertMany(bankDoc.requests)
+          const reqResult = BankRequestModel.insertMany(bankDoc.requests)
               .then((req) => req)
               .catch((error) => error)
+              //dasd
 
-          bankDoc.requests.forEach((request)=>{
-
-            RequestModel.create({request: request.request, status: false, _id: request.request})   
-            .then((req: any) => req)
-            .catch((error: any) => error)
-            GroupModel.create({group: request.request.substring(0,3), _id: request.request.substring(0,3)})
-            .then((req: any) => req)
-            .catch((error: any) => error )
-
-          })    
-
-          return { status: 'OK', bankDocument: bankDoc, error: null, req: bankRequestResult }
+          return { status: 'OK', bankDocument: bankDoc, error: null, req: reqResult }
         })
         .catch((error) => {
           return { status: 'ERROR', bankDocument: bankDocument, error: error }
@@ -101,7 +82,6 @@ app.use(function (
   res.send({ error: err.message })
   return
 })
-
-app.listen(8000, function () {
-  console.log('App is listening on port 8000!')
+const PORT = process.env.PORT || 8000
+app.listen(PORT, function () {
 })

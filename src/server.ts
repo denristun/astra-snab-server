@@ -9,6 +9,16 @@ import BankDocument from './interfaces/BankDocument'
 import { BankRequestModel, BankDocumentModel } from './libs/mongoose'
 import { request } from 'http'
 
+const groupBy = (key: any) => (array: any) =>
+array.reduce(
+  (objectsByKeyValue: any, obj:any) => ({
+    ...objectsByKeyValue,
+    [obj[key]]: (objectsByKeyValue[obj[key]] || []).concat(obj),
+  }),
+  {}
+)
+const groupByRequest = groupBy('request')
+
 // Create a new express app instance
 const app: express.Application = express()
 app.use(cors())
@@ -24,7 +34,7 @@ app.get('/api', function (req, res) {
 
 app.get('/api/bank', function (req, res) {
   BankRequestModel.find({}, (error: any, requests: BankRequest[]) => {
-    res.send(requests)
+    res.send(Object.entries(groupByRequest(requests)))
   }).sort('-value')
 })
 

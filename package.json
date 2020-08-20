@@ -2,7 +2,7 @@
   "name": "astra-snab-server",
   "version": "1.0.0",
   "description": "BackEnd server for astra-snab",
-  "main": "index.js",
+  "main": "server.ts",
   "scripts": {
     "start": "node --inspect=5858 -r ts-node/register ./src/server.ts",
     "start:watch": "nodemon",

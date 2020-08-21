@@ -32,6 +32,7 @@ app.get('/api/bank', function (req, res) {
 
 app.get('/api/groups', function (req, res) {
  //Получение уникальных групп
+ 
  GroupModel.find({}, (error: any, groups: Group[]) => {
   res.send(JSON.stringify(groups))
 }).sort('-value')
@@ -43,6 +44,17 @@ app.post('/api/requests_by_group', function (req, res) {
   BankRequestModel.find({'request': { '$regex': group, '$options': 'i' }}, (error: any, requests: BankRequest[]) => {
    res.send(Object.entries(groupByRequest(requests)))
  }).sort('-value')
+ })
+
+ app.post('/api/request', function (req, res) {
+  //Добавление заявки пользователем
+  const bankRequest: BankRequest = req.body
+  bankRequest.bankId = 'manual'
+
+  BankRequestModel.create(bankRequest)
+  .then((bankRequest:BankRequest) => res.send(bankRequest))
+  .catch((error) => res.send(error))
+
  })
 
 

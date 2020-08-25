@@ -24,64 +24,66 @@ app.get('/api', function (req, res) {
   res.send('API is run2ning')
 })
 
+//Получаем все заявки
 app.get('/api/bank', function (req, res) {
   BankRequestModel.find({}, (error: any, requests: BankRequest[]) => {
     res.send(Object.entries(groupByRequest(requests)))
   }).sort('-value')
 })
 
+//Получение уникальных групп
 app.get('/api/groups', function (req, res) {
- //Получение уникальных групп
- 
- GroupModel.find({}, (error: any, groups: Group[]) => {
-  res.send(JSON.stringify(groups))
-}).sort('-value')
+  GroupModel.find({}, (error: any, groups: Group[]) => {
+    res.send(JSON.stringify(groups))
+  }).sort('-value')
 })
 
+//Получение заявок по группам
 app.post('/api/requests_by_group', function (req, res) {
-  //Получение заявок по группам
   const group = req.body.group
-  BankRequestModel.find({'request': { '$regex': group, '$options': 'i' }}, (error: any, requests: BankRequest[]) => {
-   res.send(Object.entries(groupByRequest(requests)))
- }).sort('-value')
- })
+  BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
+    res.send(Object.entries(groupByRequest(requests)))
+  }).sort('-value')
+})
 
- app.post('/api/request', function (req, res) {
-  //Добавление заявки пользователем
+
+//Добавление заявки пользователем
+app.post('/api/request', function (req, res) {
   const bankRequest: BankRequest = req.body
   bankRequest.bankId = 'manual'
-
   BankRequestModel.create(bankRequest)
-  .then((bankRequest:BankRequest) => res.send(bankRequest))
-  .catch((error) => res.send(error))
+    .then((bankRequest: BankRequest) => res.send(bankRequest))
+    .catch((error) => res.send(error))
+})
 
- })
+//Удаление заявки пользователем
+app.delete('/api/request', function (req, res) {
+  const requestID = req.body.id
+  BankRequestModel.find({ _id: requestID }).remove()
+    .then((bankRequest: BankRequest) => res.send(bankRequest))
+    .catch((error) => res.send(error))
+})
 
 
 //Добавление всех записей из excel в БД
 app.post('/api/bank', async function (req, res) {
   const data = req.body
   let report: any[] = []
-
-
   const result = await Promise.all(
-   data.map( (bankDocument: BankDocument) => {
+    data.map((bankDocument: BankDocument) => {
       return BankDocumentModel.create(bankDocument)
         .then((bankDoc: BankDocument) => {
           const bankRequestResult = BankRequestModel.insertMany(bankDoc.requests)
-              .then((req) => req)
-              .catch((error) => error)
-
-          bankDoc.requests.forEach((request)=>{
-
-            RequestModel.create({request: request.request, status: false, _id: request.request})   
-            .then((req: any) => req)
-            .catch((error: any) => error)
-            GroupModel.create({group: request.request.substring(0,3), _id: request.request.substring(0,3)})
-            .then((req: any) => req)
-            .catch((error: any) => error )
-
-          })    
+            .then((req) => req)
+            .catch((error) => error)
+          bankDoc.requests.forEach((request) => {
+            RequestModel.create({ request: request.request, status: false, _id: request.request })
+              .then((req: any) => req)
+              .catch((error: any) => error)
+            GroupModel.create({ group: request.request.substring(0, 3), _id: request.request.substring(0, 3) })
+              .then((req: any) => req)
+              .catch((error: any) => error)
+          })
 
           return { status: 'OK', bankDocument: bankDoc, error: null, req: bankRequestResult }
         })
@@ -90,13 +92,15 @@ app.post('/api/bank', async function (req, res) {
         })
     })
   )
-
   res.send({ status: 'OK', message: result })
 })
 
 app.get('/api/bank/:id', function (req, res) {
   res.send('This is not implemented now')
 })
+
+
+
 
 app.use(function (req, res, next) {
   res.status(404)

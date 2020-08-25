@@ -3,7 +3,8 @@ import BankDocument from '../interfaces/BankDocument';
 import BankRequest from '../interfaces/BankRequest';
 import Request from '../interfaces/Request'
 import Group from '../interfaces/Group';
-const url: any = "mongodb+srv://administrator:b20012DK@cluster0-e3xjm.mongodb.net/bank?retryWrites=true&w=majority"
+// const url: any = "mongodb+srv://administrator:b20012DK@cluster0-e3xjm.mongodb.net/bank?retryWrites=true&w=majority"
+const url: any = "mongodb+srv://administrator:b20012DK@cluster0-e3xjm.mongodb.net/bankTest?retryWrites=true&w=majority"
 
 // mongoose.set('useCreateIndex', true)
 mongoose.connect( url, 
@@ -22,7 +23,8 @@ const bankRequestSchema = new Schema({
     destination: { type: String },
     date: { type: String, required: true },
     client: { type: String },
-    status: {type: Boolean, required: true, default: false}
+    status: {type: Boolean, required: true, default: false},
+    organization: {type: String, required: true}
 });
 
 const bankDocumentSchema = new Schema({
@@ -39,12 +41,13 @@ const bankDocumentSchema = new Schema({
 
 const requestSchema = new Schema({
     request: { type: String, required: true, unique:true, index: true,  dropDups: true },
-    status: { type: Boolean, required: true },
+    status: { type: String, required: true },
     _id: { type: String, required: true, unique:true, index: true,  dropDups: true}
 });
 
 const groupSchema = new Schema({
     group: { type: String, required: true, unique:true, index: true,  dropDups: true },
+    active: { type: Boolean, default: false},
     _id: { type: String, required: true, unique:true, index: true,  dropDups: true}
 });
 

@@ -24,7 +24,7 @@ const bankRequestSchema = new Schema({
     date: { type: String, required: true },
     client: { type: String },
     status: {type: Boolean, required: true, default: false},
-    organization: {type: String, required: true}
+    // organization: {type: String, required: true}
 });
 
 const bankDocumentSchema = new Schema({
@@ -41,7 +41,7 @@ const bankDocumentSchema = new Schema({
 
 const requestSchema = new Schema({
     request: { type: String, required: true, unique:true, index: true,  dropDups: true },
-    status: { type: String, required: true },
+    status: { type: Boolean, required: true, default: false },
     _id: { type: String, required: true, unique:true, index: true,  dropDups: true}
 });
 

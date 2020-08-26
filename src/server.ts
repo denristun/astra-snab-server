@@ -22,8 +22,10 @@ app.use(bodyParser.json({ limit: '50mb' }))
 app.use(express.static(path.join(__dirname, 'public'))) // запуск статического файлового сервера, который смотрит на папку public/ (в нашем случае отдает index.html)
 
 app.get('/api', function (req, res) {
-  res.send('API is run2ning')
+  res.send('API is running')
 })
+
+
 
 //Получаем все заявки
 app.get('/api/bank', function (req, res) {
@@ -63,7 +65,17 @@ app.post('/api/request', function (req, res) {
     .catch((error) => res.send(error))
 })
 
-app.post('/api/request_status', async function (req, res) {
+//Изменение операции по заявке
+app.patch('/api/request', async function (req, res) {
+  const request: BankRequest = req.body
+ await BankRequestModel.updateOne({"_id": request._id}, request)
+    res.send({ request }) 
+})
+
+
+
+//Изменение статуса заявки
+app.patch('/api/request_status', async function (req, res) {
   const { request , status } = req.body
  await BankRequestModel.updateMany({"request": request}, {status: status})
  await RequestModel.updateOne({"request": request}, {status: status})

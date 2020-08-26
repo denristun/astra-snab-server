@@ -24,7 +24,7 @@ const bankRequestSchema = new Schema({
     date: { type: String, required: true },
     client: { type: String },
     status: {type: Boolean, required: true, default: false},
-    // organization: {type: String, required: true}
+    organization: {type: String, required: true}
 });
 
 const bankDocumentSchema = new Schema({

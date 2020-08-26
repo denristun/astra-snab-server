@@ -53,26 +53,6 @@ app.post('/api/requests_by_group', function (req, res) {
  
 })
 
-// app.get('/api/requests_by_group_2',  (req, res) => {
-//   const group = "КСН"
-
-// BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } },(error: any, requests: BankRequest[]) => {
-//  let resRequests: BankRequest[]  = []
-   
-//    requests.map( async (request: BankRequest) => {
-//    RequestModel.find({'request': request.request}, (error: any, mainRequest: Request) => {
-//       })
-    
-//     })
-
-//     const resp = groupByRequest(requests)
-
-//     // res.send(Object.entries(groupByRequest(newRequests)))
-//     res.send(resp)
-//   }).sort('-value')
-// })
-
-
 
 //Добавление заявки пользователем
 app.post('/api/request', function (req, res) {
@@ -82,6 +62,15 @@ app.post('/api/request', function (req, res) {
     .then((bankRequest: BankRequest) => res.send(bankRequest))
     .catch((error) => res.send(error))
 })
+
+app.post('/api/request_status', async function (req, res) {
+  const { request , status } = req.body
+ await BankRequestModel.updateMany({"request": request}, {status: status})
+ await RequestModel.updateOne({"request": request}, {status: status})
+    res.send({ request , status }) 
+})
+
+
 
 //Удаление заявки пользователем
 app.delete('/api/request', function (req, res) {

@@ -6,6 +6,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import BankRequest from './interfaces/BankRequest'
 import BankDocument from './interfaces/BankDocument'
+import Request from './interfaces/Request'
 import { BankRequestModel, BankDocumentModel, RequestModel, GroupModel } from './libs/mongoose'
 import { groupByRequest } from './libs/utils'
 import Group from './interfaces/Group'
@@ -45,6 +46,24 @@ app.post('/api/requests_by_group', function (req, res) {
     res.send(Object.entries(groupByRequest(requests)))
   }).sort('-value')
 })
+
+app.post('/api/requests_by_group_2', function (req, res) {
+  const group = "КСН"
+
+
+  BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
+
+    const newRequests = requests.map((request: BankRequest) => {
+      RequestModel.find({'request': request.request}, (error: any, mainRequest: Request) => {
+        request.status = 'sdad'
+      })
+return request
+    })
+
+    res.send(Object.entries(groupByRequest(newRequests)))
+  }).sort('-value')
+})
+
 
 
 //Добавление заявки пользователем

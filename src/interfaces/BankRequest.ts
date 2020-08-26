@@ -10,7 +10,7 @@ interface BankRequest extends mongoose.Document {
     date: string
     client?: string
     destination?: string
-    status: boolean
+    status: string
 }
 
 export default BankRequest

@@ -52,16 +52,17 @@ app.get('/api/requests_by_group_2', function (req, res) {
 
   BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
    
-    const newRequests = requests.map((request: BankRequest) => {
+    requests.forEach((request: BankRequest) => {
       request.status = 'sdad'
       RequestModel.find({'request': request.request}, (error: any, mainRequest: Request) => {
         request.status = 'sdad'
       })
-return request
     })
 
+    const resp = groupByRequest(requests)
+
     // res.send(Object.entries(groupByRequest(newRequests)))
-    res.send((groupByRequest(newRequests)))
+    res.send(resp)
   }).sort('-value')
 })
 

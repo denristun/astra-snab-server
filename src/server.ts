@@ -51,8 +51,9 @@ app.get('/api/requests_by_group_2', function (req, res) {
   const group = "КСН"
 
   BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
-    request.status = 'sdad'
+   
     const newRequests = requests.map((request: BankRequest) => {
+      request.status = 'sdad'
       RequestModel.find({'request': request.request}, (error: any, mainRequest: Request) => {
         request.status = 'sdad'
       })

@@ -77,7 +77,7 @@ app.post('/api/bank', async function (req, res) {
             .then((req) => req)
             .catch((error) => error)
           bankDoc.requests.forEach((request) => {
-            RequestModel.create({ request: request.request, status: "", _id: request.request })
+            RequestModel.create({ request: request.request, _id: request.request })
               .then((req: any) => req)
               .catch((error: any) => error)
             GroupModel.create({ group: request.request.substring(0, 3), _id: request.request.substring(0, 3) })

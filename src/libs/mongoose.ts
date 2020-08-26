@@ -45,7 +45,7 @@ const bankDocumentSchema = new Schema({
 
 const requestSchema = new Schema({
     request: { type: String, required: true, unique:true, index: true,  dropDups: true },
-    status: { type: String, required: true, default: "" },
+    status: { type: String,  default: "" },
     _id: { type: String, required: true, unique:true, index: true,  dropDups: true}
 });
 

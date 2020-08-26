@@ -3,8 +3,12 @@ import BankDocument from '../interfaces/BankDocument';
 import BankRequest from '../interfaces/BankRequest';
 import Request from '../interfaces/Request'
 import Group from '../interfaces/Group';
-// const url: any = "mongodb+srv://administrator:b20012DK@cluster0-e3xjm.mongodb.net/bank?retryWrites=true&w=majority"
-const url: any = "mongodb+srv://administrator:b20012DK@cluster0-e3xjm.mongodb.net/bankTest?retryWrites=true&w=majority"
+
+//Dev db
+const url: any = "mongodb+srv://administrator:b20012DK@cluster0-e3xjm.mongodb.net/bank?retryWrites=true&w=majority"
+
+//Sumin test
+// const url: any = "mongodb+srv://administrator:b20012DK@cluster0-e3xjm.mongodb.net/bankTest?retryWrites=true&w=majority"
 
 // mongoose.set('useCreateIndex', true)
 mongoose.connect( url, 

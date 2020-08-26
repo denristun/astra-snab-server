@@ -47,9 +47,8 @@ app.post('/api/requests_by_group', function (req, res) {
   }).sort('-value')
 })
 
-app.post('/api/requests_by_group_2', function (req, res) {
+app.get('/api/requests_by_group_2', function (req, res) {
   const group = "КСН"
-
 
   BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
 
@@ -60,7 +59,8 @@ app.post('/api/requests_by_group_2', function (req, res) {
 return request
     })
 
-    res.send(Object.entries(groupByRequest(newRequests)))
+    // res.send(Object.entries(groupByRequest(newRequests)))
+    res.send((groupByRequest(newRequests)))
   }).sort('-value')
 })
 

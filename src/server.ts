@@ -42,29 +42,35 @@ app.get('/api/groups', function (req, res) {
 //Получение заявок по группам
 app.post('/api/requests_by_group', function (req, res) {
   const group = req.body.group
-  BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
-    res.send(Object.entries(groupByRequest(requests)))
-  }).sort('-value')
+  if (group){
+    BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
+      res.send(Object.entries(groupByRequest(requests)))
+    }).sort('-value')
+  }
+  else{
+    res.send({})
+  }
+ 
 })
 
-app.get('/api/requests_by_group_2', function (req, res) {
-  const group = "КСН"
+// app.get('/api/requests_by_group_2',  (req, res) => {
+//   const group = "КСН"
 
-  BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } }, (error: any, requests: BankRequest[]) => {
+// BankRequestModel.find({ 'request': { '$regex': group, '$options': 'i' } },(error: any, requests: BankRequest[]) => {
+//  let resRequests: BankRequest[]  = []
    
-    requests.forEach((request: BankRequest) => {
-      request.status = 'sdad'
-      RequestModel.find({'request': request.request}, (error: any, mainRequest: Request) => {
-        request.status = 'sdad'
-      })
-    })
+//    requests.map( async (request: BankRequest) => {
+//    RequestModel.find({'request': request.request}, (error: any, mainRequest: Request) => {
+//       })
+    
+//     })
 
-    const resp = groupByRequest(requests)
+//     const resp = groupByRequest(requests)
 
-    // res.send(Object.entries(groupByRequest(newRequests)))
-    res.send(resp)
-  }).sort('-value')
-})
+//     // res.send(Object.entries(groupByRequest(newRequests)))
+//     res.send(resp)
+//   }).sort('-value')
+// })
 
 
 

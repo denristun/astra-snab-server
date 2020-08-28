@@ -44,12 +44,35 @@ app.get('/api/groups', function (req, res) {
 //Получение уникальных значений
 app.get('/api/unique', async function (req, res) {
   const requests = await BankRequestModel.find({})
-  const groups = await GroupModel.find({})
   const requestsNums =  requests.map(request => request.request)
-  const uniqueRequests = new Set(requestsNums)
+  const uniqueRequests = requestsNums
+   .filter((value, index, self) =>{
+      return self.indexOf(value) === index
+  })
+    .sort()
+  
+  const documents = await BankDocumentModel.find({})
+  const organizations = documents.map(document => document.organization)
+  const uniqueOrganizations = organizations
+   .filter((value, index, self) =>{
+     return self.indexOf(value) === index
+})
+    .sort() 
+
+    const clients = documents.map(document => document.client)
+    const uniqueclients = clients
+     .filter((value, index, self) =>{
+       return self.indexOf(value) === index
+  })
+      .sort() 
+
+
+
+  const groups = await GroupModel.find({})
+ 
 
   
-  res.send(JSON.stringify({uniqueRequests, groups}))
+  res.send(JSON.stringify({uniqueRequests, uniqueOrganizations, uniqueclients, groups}))
 
  
 })

@@ -45,8 +45,10 @@ app.get('/api/groups', function (req, res) {
 app.get('/api/unique', async function (req, res) {
   const requests = await RequestModel.find({})
   const groups = await GroupModel.find({})
+  const requestsNums = requests.map(request => request.request)
+
   
-  res.send(JSON.stringify({requests, groups}))
+  res.send(JSON.stringify({requestsNums, groups}))
 
  
 })

@@ -41,6 +41,19 @@ app.get('/api/groups', function (req, res) {
   }).sort('-value')
 })
 
+//Получение уникальных значений
+app.get('/api/unique', async function (req, res) {
+  const requests = await RequestModel.find({})
+  const groups = await GroupModel.find({})
+  
+  res.send(JSON.stringify({requests, groups}))
+
+ 
+})
+
+
+
+
 //Получение заявок по группам
 app.post('/api/requests_by_group', function (req, res) {
   const group = req.body.group
@@ -72,6 +85,10 @@ app.patch('/api/request', async function (req, res) {
  await BankRequestModel.updateOne({"_id": request._id}, request)
     res.send({ request }) 
 })
+
+
+
+
 
 
 

@@ -45,7 +45,7 @@ app.get('/api/groups', function (req, res) {
 app.get('/api/unique', async function (req, res) {
   const requests = await BankRequestModel.find({})
   const groups = await GroupModel.find({})
-  const requestsNums = new Set(requests.map(request => request.request))
+  const requestsNums = requests.map(request => request.request)
 
   
   res.send(JSON.stringify({requestsNums, groups}))

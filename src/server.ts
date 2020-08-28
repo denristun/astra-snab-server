@@ -47,7 +47,7 @@ app.get('/api/unique', async function (req, res) {
   const requestsNums =  requests.map(request => request.request)
   const uniqueRequests = requestsNums
    .filter((value, index, self) =>{
-      return self.indexOf(value) === index && self.indexOf(value) !== null
+      return self.indexOf(value) === index && value != null
   })
     .sort()
   
@@ -55,14 +55,14 @@ app.get('/api/unique', async function (req, res) {
   const organizations = documents.map(document => document.organization)
   const uniqueOrganizations = organizations
    .filter((value, index, self) =>{
-     return self.indexOf(value) === index  && self.indexOf(value) !== null
+     return self.indexOf(value) === index  && value != null
 })
     .sort() 
 
     const clients = documents.map(document => document.client)
     const uniqueclients = clients
      .filter((value, index, self) =>{
-       return self.indexOf(value) === index && self.indexOf(value) !== null
+       return self.indexOf(value) === index && value != null
   })
       .sort() 
 

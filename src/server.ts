@@ -60,7 +60,7 @@ app.get('/api/unique', async function (req, res) {
     .sort() 
 
     const clients = documents.map(document => document.client)
-    const uniqueclients = clients
+    const uniqueClients = clients
      .filter((value, index, self) =>{
        return self.indexOf(value) === index && value != null
   })
@@ -68,11 +68,11 @@ app.get('/api/unique', async function (req, res) {
 
 
 
-  const groups = await GroupModel.find({})
+  const uniqueGroups = await GroupModel.find({})
  
 
   
-  res.send(JSON.stringify({uniqueRequests, uniqueOrganizations, uniqueclients, groups}))
+  res.send(JSON.stringify({uniqueRequests, uniqueOrganizations, uniqueClients, uniqueGroups}))
 
  
 })

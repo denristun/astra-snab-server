@@ -5,7 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "start": "ts-node ./src/server.ts",
-    "start:watch": "nodemon"
+    "start:watch": "nodemon",
+    "build": "tsc"
   },
   "keywords": [
     "astra-snab"

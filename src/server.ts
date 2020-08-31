@@ -156,7 +156,7 @@ app.post('/api/bank', async function (req, res) {
               .then((req: any) => req)
               .catch((error: any) => error)
           })
-
+         
           return { status: 'OK', bankDocument: bankDoc, error: null, req: bankRequestResult }
         })
         .catch((error) => {

@@ -107,15 +107,9 @@ app.post('/api/request', function (req, res) {
 //Изменение операции по заявке
 app.patch('/api/request', async function (req, res) {
   const request: BankRequest = req.body
-  console.log(request)
  await BankRequestModel.updateOne({"_id": request._id}, request)
     res.send({ request }) 
 })
-
-
-
-
-
 
 
 //Изменение статуса заявки

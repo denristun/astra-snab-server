@@ -17,6 +17,7 @@ import { groupByRequest } from './libs/utils'
 import Group from './interfaces/Group'
 
 // Create a new express app instance
+const TOKEN = "NgLSJb3mHApOLzG1fhoG-WMKKKrGbdnLNQfK5QPWe-eRExPKDuQx2DvaI426fb-Vat0mqnd8cI78BlXeN5J"
 const app: express.Application = express()
 app.use(cors())
 
@@ -28,6 +29,19 @@ app.use(express.static(path.join(__dirname, 'public'))) // запуск стат
 app.get('/api', function (req, res) {
   res.send('API is running')
 })
+
+//Получение токена
+app.post('/api/login', function (req, res) {
+  const username = req.body.username
+  const password = req.body.password
+  if (username === '1' && password === '1'){
+    res.send(JSON.stringify({token: TOKEN}))
+  }
+  else{
+    res.send(JSON.stringify({error: 'Непривильные учётные данные'}))
+  }
+})
+
 
 //Получаем все заявки
 app.get('/api/bank', function (req, res) {

@@ -139,6 +139,7 @@ app.patch('/api/request', async function (req, res) {
 //Изменение статуса заявки
 app.patch('/api/request_status', async function (req, res) {
   const requests = req.body.requests
+  console.log(requests)
   await RequestModel.updateOne(
     { request: requests[0].request },
     { status: requests[0].status }

@@ -15,9 +15,13 @@ import {
 } from './libs/mongoose'
 import { groupByRequest } from './libs/utils'
 import Group from './interfaces/Group'
+import { request } from 'http'
 
 // Create a new express app instance
-const TOKEN = "NgLSJb3mHApOLzG1fhoG-WMKKKrGbdnLNQfK5QPWe-eRExPKDuQx2DvaI426fb-Vat0mqnd8cI78BlXeN5J"
+const TOKEN =
+  'NgLSJb3mHApOLzG1fhoG-WMKKKrGbdnLNQfK5QPWe-eRExPKDuQx2DvaI426fb-Vat0mqnd8cI78BlXeN5J'
+const TOKEN2 =
+  '"NgLSJb3mHApOLzG1fhoG-WMKKKrGbdnLNQfK5QPWe-eRExPKDuQx2DvaI426fb-Vat0mqnd8cI78BlXeN5J"'
 const app: express.Application = express()
 app.use(cors())
 
@@ -26,25 +30,32 @@ app.use(bodyParser.json({ limit: '50mb' }))
 
 app.use(express.static(path.join(__dirname, 'public'))) // запуск статического файлового сервера, который смотрит на папку public/ (в нашем случае отдает index.html)
 
-app.get('/api', function (req, res) {
-  res.send('API is running')
-})
-
 //Получение токена
 app.post('/api/login', function (req, res) {
   const username = req.body.username
   const password = req.body.password
-  if (username === '1' && password === '1'){
-    res.send(JSON.stringify({token: TOKEN}))
-  }
-  else{
-    res.send(JSON.stringify({error: 'Непривильные учётные данные'}))
+  if (username === '1' && password === '1') {
+    res.send(JSON.stringify({ token: TOKEN }))
+  } else {
+    res.send(JSON.stringify({ error: 'Непривильные учётные данные' }))
   }
 })
 
+app.use(function (req, res, next) {
+  const token = req.body.token
+
+  if (token === TOKEN || token === TOKEN2) next()
+  else {
+    res.send({ error: true, message: 'Authorization requried.' })
+  }
+})
+
+app.post('/api', function (req, res) {
+  res.send('API is running')
+})
 
 //Получаем все заявки
-app.get('/api/bank', function (req, res) {
+app.post('/api/bank', function (req, res) {
   BankRequestModel.find({}, (error: any, requests: BankRequest[]) => {
     res.send(Object.entries(groupByRequest(requests)))
   }).sort('client')
@@ -66,14 +77,14 @@ app.post('/api/requests_by_group', function (req, res) {
 })
 
 //Получение уникальных групп
-app.get('/api/groups', function (req, res) {
+app.post('/api/groups', function (req, res) {
   GroupModel.find({}, (error: any, groups: Group[]) => {
     res.send(JSON.stringify(groups))
   }).sort('group')
 })
 
 //Получение уникальных значений
-app.get('/api/unique', async function (req, res) {
+app.post('/api/unique', async function (req, res) {
   const requests = await BankRequestModel.find({})
   const requestsNums = requests.map((request) => request.request)
   const uniqueRequests = requestsNums
@@ -127,10 +138,18 @@ app.patch('/api/request', async function (req, res) {
 
 //Изменение статуса заявки
 app.patch('/api/request_status', async function (req, res) {
-  const { request, status } = req.body
-  await BankRequestModel.updateMany({ request: request }, { status: status })
-  await RequestModel.updateOne({ request: request }, { status: status })
-  res.send({ request, status })
+  const { requests } = req.body
+  await RequestModel.updateOne(
+    { request: requests[0].request },
+    { status: requests[0].status }
+  )
+  requests.map(async (request: any) => {
+    await BankRequestModel.updateMany(
+      { request: request },
+      { status: request.status }
+    )
+  })
+  res.send({ requests })
 })
 
 //Удаление заявки пользователем
@@ -143,50 +162,63 @@ app.delete('/api/request', function (req, res) {
 })
 
 //Добавление всех записей из excel в БД
-app.post('/api/bank', async function (req, res) {
-  const data = req.body
-  let report: any[] = []
-  const result = await Promise.all(
-    data.map((bankDocument: BankDocument) => {
-      return BankDocumentModel.create(bankDocument)
-        .then((bankDoc: BankDocument) => {
-          const bankRequestResult = BankRequestModel.insertMany(
-            bankDoc.requests
-          )
-            .then((req) => req)
-            .catch((error) => error)
-          bankDoc.requests.forEach((request) => {
-            RequestModel.create({
-              request: request.request,
-              status: '',
-              _id: request.request,
+app.post(
+  '/api/upload_bank',
+  function (req, res, next) {
+    const data = req.body.documents
+    if (data && Array.isArray(data)) next()
+    else
+      res.send({
+        error: true,
+        message: 'Documents is requried. And must be an array.',
+      })
+  },
+
+  async function (req, res) {
+    const data = req.body.documents
+    let report: any[] = []
+    const result = await Promise.all(
+      data.map((bankDocument: BankDocument) => {
+        return BankDocumentModel.create(bankDocument)
+          .then((bankDoc: BankDocument) => {
+            const bankRequestResult = BankRequestModel.insertMany(
+              bankDoc.requests
+            )
+              .then((req) => req)
+              .catch((error) => error)
+            bankDoc.requests.forEach((request) => {
+              RequestModel.create({
+                request: request.request,
+                status: '',
+                _id: request.request,
+              })
+                .then((req: any) => req)
+                .catch((error: any) => error)
+              GroupModel.create({
+                group: request.request.substring(0, 3),
+                _id: request.request.substring(0, 3),
+              })
+                .then((req: any) => req)
+                .catch((error: any) => error)
             })
-              .then((req: any) => req)
-              .catch((error: any) => error)
-            GroupModel.create({
-              group: request.request.substring(0, 3),
-              _id: request.request.substring(0, 3),
-            })
-              .then((req: any) => req)
-              .catch((error: any) => error)
+
+            return {
+              status: 'OK',
+              bankDocument: bankDoc,
+              error: null,
+              req: bankRequestResult,
+            }
           })
+          .catch((error) => {
+            return { status: 'ERROR', bankDocument: bankDocument, error: error }
+          })
+      })
+    )
+    res.send({ status: 'OK', message: result })
+  }
+)
 
-          return {
-            status: 'OK',
-            bankDocument: bankDoc,
-            error: null,
-            req: bankRequestResult,
-          }
-        })
-        .catch((error) => {
-          return { status: 'ERROR', bankDocument: bankDocument, error: error }
-        })
-    })
-  )
-  res.send({ status: 'OK', message: result })
-})
-
-app.get('/api/bank/:id', function (req, res) {
+app.post('/api/bank/:id', function (req, res) {
   res.send('This is not implemented now')
 })
 

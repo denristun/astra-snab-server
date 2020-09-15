@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, 'public'))) // запуск стат
 app.post('/api/login', function (req, res) {
   const username = req.body.username
   const password = req.body.password
-  if (username === '1' && password === '1') {
+  if (username === 'sumincrm' && password === 'Qwerty123') {
     res.send(JSON.stringify({ token: TOKEN }))
   } else {
     res.send(JSON.stringify({ error: 'Непривильные учётные данные' }))
@@ -122,7 +122,8 @@ app.post('/api/unique', async function (req, res) {
 
 //Добавление заявки пользователем
 app.post('/api/request', function (req, res) {
-  const bankRequest: BankRequest = req.body
+  console.log(req.body)
+  const bankRequest: BankRequest = req.body.request
   bankRequest.bankId = 'manual'
   BankRequestModel.create(bankRequest)
     .then((bankRequest: BankRequest) => res.send(bankRequest))
@@ -131,7 +132,7 @@ app.post('/api/request', function (req, res) {
 
 //Изменение операции по заявке
 app.patch('/api/request', async function (req, res) {
-  const request: BankRequest = req.body
+  const request: BankRequest = req.body.operation
   await BankRequestModel.updateOne({ _id: request._id }, request)
   res.send({ request })
 })

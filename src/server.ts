@@ -58,7 +58,7 @@ app.post('/api', function (req, res) {
 app.post('/api/bank', function (req, res) {
   BankRequestModel.find({}, (error: any, requests: BankRequest[]) => {
     res.send(Object.entries(groupByRequest(requests)))
-  }).sort('client')
+  }).sort('request')
 })
 
 //Получение заявок по группам
@@ -70,7 +70,7 @@ app.post('/api/requests_by_group', function (req, res) {
       (error: any, requests: BankRequest[]) => {
         res.send(Object.entries(groupByRequest(requests)))
       }
-    ).sort('client')
+    ).sort('request')
   } else {
     res.send({})
   }
